@@ -1,0 +1,132 @@
+P1 CODE
+data(iris)
+head(iris)
+model <- lm(Sepal.Length ~ Petal.Length, data = iris)
+summary(model)
+
+
+P2 CODE
+data(mtcars)
+model <- lm(mpg ~ wt + hp + disp, data = mtcars)
+summary(model)
+anova(model)
+plot(model)
+
+
+P4 CODE
+x<- c(1,2,3,4)
+y<-c(2,4,5,20)
+model<- lm(y~x)
+summary(model)
+cooks.distance(model)
+dfbetas(model)
+par(mfrow=c(2,2))
+plot(model)
+
+
+P5 CODE
+install.packages('nlme')
+library(nlme)
+x<-c(1,2,3,4)
+y<-c(2,4,7,15)
+model<-gls(y~x)
+summary(model)
+m1<-gls(y~x,weights=varFixed(~x))
+summary(m1)
+m2<-gls(y~x,correlation = corAR1())
+summary(m2)
+m3<-gls(y~x,weights = varFixed(~x),correlation = corAR1())
+summary(m3)
+model_ols<-lm(y~x)
+summary(model_ols)
+
+
+P6 CODE
+PART 1
+data(mtcars)
+View(mtcars)
+mtcars$am=factor(mtcars$am,label=c("automatic","manual"))
+model=lm(mpg~am,data=mtcars)
+summary(model)
+
+
+PART 2
+mtcars$cyl=factor(mtcars$cyl)
+View(mtcars)
+model1=lm(mpg~cyl,data=mtcars)
+summary(model)
+
+
+PART 3
+model2<-lm(mpg~wt+am,data=mtcars)
+summary(model2)
+model3<-lm(mpg~wt*am,data=mtcars)
+summary(model3)
+
+
+P7 CODE
+data(mtcars)
+y=mtcars$mpg
+x1=mtcars$cyl
+x2=mtcars$disp
+x3=mtcars$hp
+x4=mtcars$wt
+x5=mtcars$am
+x6=mtcars$gear
+model<-lm(y~x1+x2+x3+x4+x5+x6)
+summary(model)
+plot(model)
+library(lmtest)
+bptest(model)
+y1=log(y)
+model_log=lm(y1~x1+x2+x3+x4+x5+x6)
+summary(model_log)
+library(mctest)
+mctest(model_log,type="i",method="VIF")
+library(glmnet)
+cv.glmnet(design,y1)
+design=cbind(x1,x2,x3,x4,x5,x6)
+library(lmridge)
+library(MASS)
+ridgemodel<-cv.glmnet(design,y1)
+finalridge1=lm.ridge(y1~x1+x2+x3+x4+x5+x6,lambda=ridgemodel$lambda.min)
+summary(finalridge1)
+coef(finalridge1)
+
+
+P8 CODE
+data(mtcars)
+poly_model<-lm(mpg~wt+I(wt^2),data=mtcars)
+summary(poly_model)
+poly3_model<-lm(mpg~wt+I(wt^3),data=mtcars)
+summary(poly3_model)
+plot(mtcars$wt,mtcars$mpg)
+lines(sort(mtcars$wt),fitted(poly_model)[order(mtcars$wt)],col="blue",lwd=2)
+model<-lm(mpg~wt,data=mtcars)
+AIC(model,poly_model)
+
+
+P9 CODE
+data(mtcars)
+head(mtcars)
+mtcars$am<-factor(mtcars$am)
+model<=glm(am~hp+wt,data = mtcars,family=binomial)
+summary(model)
+exp(coef(model))
+prob<-predict(model,type="response")
+pred<-ifelse(prob>0.5,1,0)
+table(Predicted=pred,Actual=mtcars$am)
+head(prob)
+
+
+P10 CODE
+data<-
+data.frame(visits=c(1,3,2,5,4,6,3,2,7,5),age=c(25,30,22,40,35,50,28,23,45,38),income=
+c(20000,25000,18000,40000,35000,50000,27000,22000,45000,38000))
+model<-glm(visits~age+income,family=poisson(link="log"),
+ data=data)
+summary(model)
+exp(0.03)
+exp(0.0002)
+pred_counts<-predict(model,type="response")
+print(pred_counts)
